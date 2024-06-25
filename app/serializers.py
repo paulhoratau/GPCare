@@ -93,3 +93,4 @@ class PrescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prescription  # The model to serialize.
         fields = '__all__'  # Serialize all fields of the Comment model.
+

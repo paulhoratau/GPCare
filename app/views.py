@@ -140,3 +140,12 @@ class PrescriptionList(generics.ListCreateAPIView):
             serializer.save(doctor=doctor)
         except Doctor.DoesNotExist:
             raise serializers.ValidationError("The logged-in user is not associated with any doctor.")
+
+from .permissions import IsOwnerOrReadOnly
+
+class PatientPrescription(generics.ListAPIView):
+    serializer_class = PrescriptionSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        return Prescription.objects.filter(patient=self.request.user)

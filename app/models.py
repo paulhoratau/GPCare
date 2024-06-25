@@ -41,6 +41,5 @@ class Prescription(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     medical_facility = models.CharField(max_length=100)
     rx = models.TextField()
-    patient = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    patient = models.ForeignKey(UserModel, on_delete=models.CASCADE)  # Assuming patient is a User model
     doctor = models.ForeignKey('Doctor', on_delete=models.CASCADE)
- 
