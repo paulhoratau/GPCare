@@ -32,12 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ("id", "username", "email", "first_name", "last_name", "password")
+        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name']
         extra_kwargs = {
-            'username': {'required': True},
-            'email': {'required': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
+            'id': {'read_only': True},
+            'password': {'write_only': True, 'required': False},  # Password is only required on create
         }
 
 
@@ -72,25 +70,39 @@ class ReviewSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')  # The username of the owner, read-only.
 
     class Meta:
-        model = Review  # The model to serialize.
-        fields = '__all__'  # Serialize all fields of the Comment model.
+        model = Review
+        fields = '__all__'
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(required=False)
+    start_time = serializers.TimeField(required=False)
+    end_time = serializers.TimeField(required=False)
+    doctor = serializers.PrimaryKeyRelatedField(queryset=Doctor.objects.all(), required=False)
+
     class Meta:
-        model = Appointment  # The model to serialize.
-        fields = ['created', 'date','start_time','end_time', 'doctor']
+        model = Appointment
+        fields = ['created', 'date', 'start_time', 'end_time', 'doctor']
 
     def validate(self, data):
-        validate_time_overlap(data['date'], data['start_time'], data['end_time'], self.instance)
+        # Ensure to validate against instance values for partial updates
+        date = data.get('date', self.instance.date if self.instance else None)
+        start_time = data.get('start_time', self.instance.start_time if self.instance else None)
+        end_time = data.get('end_time', self.instance.end_time if self.instance else None)
+        validate_time_overlap(date, start_time, end_time, self.instance)
         return data
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 
 class PrescriptionSerializer(serializers.ModelSerializer):
-    doctor = serializers.ReadOnlyField(source='doctor.username')  # The username of the owner, read-only.
+    doctor = serializers.ReadOnlyField(source='doctor.username')
 
     class Meta:
-        model = Prescription  # The model to serialize.
-        fields = '__all__'  # Serialize all fields of the Comment model.
-
+        model = Prescription
+        fields = '__all__'

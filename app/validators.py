@@ -6,7 +6,7 @@ def validate_time_overlap(date, start_time, end_time, instance=None):
     if start_time >= end_time:
         raise ValidationError(_('End time must be after start time.'))
 
-    from .models import Appointment  # Import here to avoid circular import issues
+    from .models import Appointment 
     overlapping_events = Appointment.objects.filter(
         date=date
     ).filter(

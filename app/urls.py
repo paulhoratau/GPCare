@@ -22,8 +22,8 @@ urlpatterns = [
     path('doctor/<int:pk>/', views.DoctorDetailView.as_view(), name='doctor-detail'),
 
 
-    path('post/review/', views.ReviewList.as_view(), name='review-list-create'),  # URL for listing and creating comments.
-    path('review/<int:pk>/', views.ReviewDetail.as_view(), name='review-detail'),  # URL for retrieving, updating, and deleting a comment by its primary key (pk).
+    path('post/review/', views.ReviewList.as_view(), name='review-list-create'),
+    path('review/<int:pk>/', views.ReviewDetail.as_view(), name='review-detail'),
     path('doctor/<int:pk>/reviews/', views.DoctorReviews.as_view()),
 
     path('appointment/', views.AppointmentView.as_view()),
